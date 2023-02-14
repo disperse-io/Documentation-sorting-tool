@@ -3,7 +3,7 @@ import shutil
 import pandas as pd
 import openpyxl
 from openpyxl.worksheet.datavalidation import DataValidation
-from IPython import display
+
 
 
 

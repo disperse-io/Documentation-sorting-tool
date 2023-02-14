@@ -56,9 +56,8 @@ display(log_output)
 
 def call_move_function(_):
     with log_output:
-        clear_output()        
+        clear_output()              
         Generator_object.create_and_move_files()
-        display("Folders are Crerate")
 
 
 def call_fill_excel_sheet(_):
