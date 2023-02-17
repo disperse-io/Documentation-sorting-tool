@@ -25,7 +25,7 @@ dirs = [
     "04_Details",
     "05_Elevations & Sections",
     "06_Facades",
-    "07_Struktural",
+    "07_Structural",
     "08_Schedule",
     "09_Schenatic",
     "10_Notes & Symbols",
@@ -44,19 +44,21 @@ Generator_object = Generator(parent_dir, src_dir, dirs, project_name)
 
 # Creating Buttons
 
-button_create_project = widgets.Button(description="Create Project", button_style="info")
+button_create_project = widgets.Button(
+    description="Create Project", button_style="info"
+)
 button_fill_excel = widgets.Button(description="Fill Excel", button_style="info")
 button_move_files = widgets.Button(description="Move Files", button_style="info")
-button3 = widgets.Button(description="Rename Files", button_style="info")
 
-display(widgets.HBox([button_create_project, button_fill_excel, button_move_files, button3]))
+display(widgets.HBox([button_create_project, button_fill_excel, button_move_files]))
 
-log_output=widgets.Output()
+log_output = widgets.Output()
 display(log_output)
+
 
 def call_move_function(_):
     with log_output:
-        clear_output()              
+        clear_output()
         Generator_object.create_and_move_files()
 
 
@@ -64,7 +66,6 @@ def call_fill_excel_sheet(_):
     with log_output:
         clear_output()
         Generator_object.fill_excel_sheet()
-    
 
 
 def call_move_to_final_location(_):
