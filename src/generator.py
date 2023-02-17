@@ -3,7 +3,7 @@ import shutil
 import pandas as pd
 import openpyxl
 from openpyxl.worksheet.datavalidation import DataValidation
-import math
+from openpyxl.utils import quote_sheetname
 
 
 class Generator:
@@ -25,13 +25,26 @@ class Generator:
         if os.path.exists(project_folders_path):
             display("Error: Folder already exists.")
             return
-        [
-            os.makedirs(
-                os.path.join(project_folders_path, x),
-                exist_ok=True,
-            )
-            for x in self.folder_names
-        ]
+
+        # Creating Folders
+        for directory_name in self.folder_names:
+            if directory_name == "02_Typrical Floor":
+                for floor_no in range(00, 51):
+                    os.makedirs(
+                        os.path.join(
+                            project_folders_path,
+                            directory_name,
+                            "Floor_" + str(floor_no),
+                        ),
+                        exist_ok=True,
+                    )
+
+            else:
+                os.makedirs(
+                    os.path.join(project_folders_path, directory_name),
+                    exist_ok=True,
+                )
+
         for root, dirs, files in os.walk(self.source_dir_path):
             for file in files:
                 src_file = os.path.join(root, file)
@@ -62,32 +75,37 @@ class Generator:
             )
         display("Folder created to following path: " + str(project_folders_path))
 
-    # def fill_excel_sheet(self, destination_dir_path, folder_names, file_name):
-
     def fill_excel_sheet(self):
         all_data_files = os.listdir(
             os.path.join(
                 self.destination_dir_path, self.project_name, self.folder_names[-1]
             )
         )
-        validation_rule = ""
-        # data_to_paste = [[x] for x in folder_names if folder_names != "12_All_Data"]
+        typical_floor_direcs = os.listdir(
+            os.path.join(
+                self.destination_dir_path, self.project_name, "02_Typrical Floor"
+            )
+        )
         workbook = openpyxl.Workbook()
         worksheet = workbook.active
+        validation_worksheet = workbook.create_sheet("validation_data")
         worksheet.append(["File Name", "New Name", "Destination"])
         for row in all_data_files:
             worksheet.append([row])
 
         for folders in self.folder_names:
-            if folders == self.folder_names[-1]:
-                validation_rule = validation_rule + folders
-            else:
-                validation_rule = validation_rule + folders + ","
+            if folders == "02_Typrical Floor":
+                for floor in typical_floor_direcs:
+                    validation_worksheet.append([folders + " <> " + floor])
+            validation_worksheet.append([folders])
         validation = DataValidation(
-            type="list", formula1='"' + validation_rule + '"', allow_blank=True
+            type="list",
+            formula1="{0}!$A:$A".format(quote_sheetname("validation_data")),
+            allow_blank=False,
         )
         validation.add("C2:C" + str(len(self.folder_names)))
         worksheet.add_data_validation(validation)
+        validation_worksheet.sheet_state = "hidden"
         workbook.save(
             os.path.join(
                 self.destination_dir_path,
@@ -109,7 +127,6 @@ class Generator:
             )
         )
 
-    # def move_to_final_location(self, project_folder, file_name):
     def move_to_final_location(self):
         try:
             excel_file = pd.read_excel(
@@ -149,8 +166,6 @@ class Generator:
                         )
                 try:
                     shutil.move(file_src_path, file_dest_path)
-                    # if len(new_file_name) > 1:
-                    #     os.remove(file_src_path)
 
                 except FileNotFoundError:
                     pass
