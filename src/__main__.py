@@ -44,6 +44,7 @@ Generator_object = Generator(parent_dir, src_dir, dirs, project_name)
 
 # Creating Buttons
 
+
 button_create_project = widgets.Button(description="Create Project", button_style="info")
 button_fill_excel = widgets.Button(description="Fill Excel", button_style="info")
 button_move_files = widgets.Button(description="Move Files", button_style="info")
