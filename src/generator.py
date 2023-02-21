@@ -4,6 +4,7 @@ import pandas as pd
 import openpyxl
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.utils import quote_sheetname
+import subprocess
 
 
 class Generator:
@@ -126,6 +127,17 @@ class Generator:
                 )
             )
         )
+        subprocess.call(
+            str(
+                os.path.join(
+                    self.destination_dir_path,
+                    self.project_name,
+                    self.folder_names[1],
+                    self.project_name,
+                )
+            ),
+            shell=True,
+        )
 
     def move_to_final_location(self):
         try:
@@ -142,8 +154,8 @@ class Generator:
 
             for row in excel_file.itertuples():
                 new_file_name = row[2]
-                if len(str(row[3])) > 1:  # Checking if renamed from file
-
+                if len(str(row[3])) > 1:
+                    last_folder = str(row[3]).split(" <> ")
                     file_src_path = os.path.join(
                         self.destination_dir_path,
                         self.project_name,
@@ -154,14 +166,14 @@ class Generator:
                         file_dest_path = os.path.join(
                             self.destination_dir_path,
                             self.project_name,
-                            str(row[3]),
+                            *last_folder,
                             new_file_name,
                         )
                     else:
                         file_dest_path = os.path.join(
                             self.destination_dir_path,
                             self.project_name,
-                            str(row[3]),
+                            *last_folder,
                             row[1],
                         )
                 try:

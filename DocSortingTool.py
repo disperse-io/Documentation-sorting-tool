@@ -20,7 +20,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Enter a path where you want to create folder :C:\\Users\\Disperse\\Documents\\\n",
+      "Enter a path where you want to create folder :C:\\Users\\Disperse\\Documents\n",
       "Enter your project_name here : see\n",
       "Enter a path to folder with documentation :asda\n"
      ]
@@ -28,7 +28,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "26a48220e708475d858d294714dc4814",
+       "model_id": "4ac86b5020bf45c9985279166c691b48",
        "version_major": 2,
        "version_minor": 0
       },
@@ -42,7 +42,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "5576846c541044b0a7469b97f4f2ae2f",
+       "model_id": "d85c456d196e49a5a17aaf66153b60d9",
        "version_major": 2,
        "version_minor": 0
       },
@@ -62,6 +62,22 @@
    "cell_type": "code",
    "execution_count": null,
    "id": "aeaedad6",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9c6a10f7",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "60fd528e",
    "metadata": {},
    "outputs": [],
    "source": []
