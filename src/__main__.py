@@ -48,9 +48,9 @@ Generator_object = Generator(parent_dir, src_dir, dirs, project_name)
 button_create_project = widgets.Button(description="Create Project", button_style="info")
 button_fill_excel = widgets.Button(description="Fill Excel", button_style="info")
 button_move_files = widgets.Button(description="Move Files", button_style="info")
-button3 = widgets.Button(description="Rename Files", button_style="info")
+button_convert_to_JPEGS = widgets.Button(description="Convert to JPEG's", button_style="info")
 
-display(widgets.HBox([button_create_project, button_fill_excel, button_move_files, button3]))
+display(widgets.HBox([button_create_project, button_fill_excel, button_move_files, button_convert_to_JPEGS]))
 
 log_output=widgets.Output()
 display(log_output)
