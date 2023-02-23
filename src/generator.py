@@ -30,7 +30,7 @@ class Generator:
 
         # Creating Folders
         for directory_name in self.folder_names:
-            if directory_name == "02_Typrical Floor":
+            if directory_name == "02_Typical Floor":
                 for floor_no in range(-4, 51):
                     os.makedirs(
                         os.path.join(
@@ -85,7 +85,7 @@ class Generator:
         )
         typical_floor_direcs = os.listdir(
             os.path.join(
-                self.destination_dir_path, self.project_name, "02_Typrical Floor"
+                self.destination_dir_path, self.project_name, "02_Typical Floor"
             )
         )
         workbook = openpyxl.Workbook()
@@ -96,7 +96,7 @@ class Generator:
             worksheet.append([row])
 
         for folders in self.folder_names:
-            if folders == "02_Typrical Floor":
+            if folders == "02_Typical Floor":
                 for floor in typical_floor_direcs:
                     validation_worksheet.append([folders + " <> " + floor])
             validation_worksheet.append([folders])
