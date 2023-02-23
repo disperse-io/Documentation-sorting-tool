@@ -73,14 +73,11 @@ def call_move_to_final_location(_):
         clear_output()
         Generator_object.move_to_final_location()
 
-def call_pdf_to_JPEG(_):
-    Generator_object.pdf_to_JPEG()
-
 
 button_create_project.on_click(call_move_function)
 button_fill_excel.on_click(call_fill_excel_sheet)
 button_move_files.on_click(call_move_to_final_location)
-button_convert_to_JPEGS.on_click(call_pdf_to_JPEG)
+
 # part for checking / should be deleted after testing
 # print(f'Path where you will create new folder is : {parent_dir}')
 # print(f'{project_name} folder is created')

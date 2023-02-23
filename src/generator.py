@@ -30,7 +30,7 @@ class Generator:
 
         # Creating Folders
         for directory_name in self.folder_names:
-            if directory_name == "02_Typical Floor":
+            if directory_name == "02_Typrical Floor":
                 for floor_no in range(-4, 51):
                     os.makedirs(
                         os.path.join(
@@ -45,11 +45,7 @@ class Generator:
                 os.makedirs(
                     os.path.join(project_folders_path, directory_name),
                     exist_ok=True,
-                )          
-
-
-        
-
+                )
 
         for root, dirs, files in os.walk(self.source_dir_path):
             for file in files:
@@ -81,8 +77,6 @@ class Generator:
             )
         display("Folder created to following path: " + str(project_folders_path))
 
-       
-
     def fill_excel_sheet(self):
         all_data_files = os.listdir(
             os.path.join(
@@ -91,7 +85,7 @@ class Generator:
         )
         typical_floor_direcs = os.listdir(
             os.path.join(
-                self.destination_dir_path, self.project_name, "02_Typical Floor"
+                self.destination_dir_path, self.project_name, "02_Typrical Floor"
             )
         )
         workbook = openpyxl.Workbook()
@@ -102,7 +96,7 @@ class Generator:
             worksheet.append([row])
 
         for folders in self.folder_names:
-            if folders == "02_Typical Floor":
+            if folders == "02_Typrical Floor":
                 for floor in typical_floor_direcs:
                     validation_worksheet.append([folders + " <> " + floor])
             validation_worksheet.append([folders])
@@ -135,14 +129,13 @@ class Generator:
             )
         )
         subprocess.call(
-            str(
-                os.path.join(
-                    self.destination_dir_path,
-                    self.project_name,
-                    self.folder_names[1],
-                    self.project_name,
-                )
-            ),
+            os.path.join(
+                self.destination_dir_path,
+                self.project_name,
+                self.folder_names[0],
+                self.project_name,
+            )
+            + ".xlsx",
             shell=True,
         )
 
@@ -162,29 +155,27 @@ class Generator:
             for row in excel_file.itertuples():
                 new_file_name = row[2]
                 if len(str(row[3])) > 1:
-                    last_folder = str(row[3]).split(" <> ")
+                    last_folder = os.path.join(
+                        self.destination_dir_path,
+                        self.project_name,
+                        *str(row[3]).split(" <> "),
+                    )
                     file_src_path = os.path.join(
                         self.destination_dir_path,
                         self.project_name,
                         self.folder_names[-1],
                         row[1],
                     )
+
                     if isinstance(new_file_name, str):
-                        file_dest_path = os.path.join(
-                            self.destination_dir_path,
-                            self.project_name,
-                            *last_folder,
-                            new_file_name,
-                        )
+                        file_name = new_file_name
+                        file_dest_path = os.path.join(last_folder, new_file_name)
                     else:
-                        file_dest_path = os.path.join(
-                            self.destination_dir_path,
-                            self.project_name,
-                            *last_folder,
-                            row[1],
-                        )
+                        file_name = row[1]
+                        file_dest_path = os.path.join(last_folder, row[1])
                 try:
                     shutil.move(file_src_path, file_dest_path)
+                    self.convert_pdf_to_jpeg(file_name, last_folder)
 
                 except FileNotFoundError:
                     pass
@@ -206,44 +197,16 @@ class Generator:
                 excel_file.close()
             raise
 
-
-    def pdf_to_JPEG(self):
-
-        path_to_typical_floor=os.path.join(self.destination_dir_path,self.project_name,"02_Typical Floor")       
-        files_and_folders = os.listdir(os.path.join(self.destination_dir_path,self.project_name,"02_Typical Floor"))
-
-       
-
-        for item in files_and_folders:
-            folder_path = os.path.join(path_to_typical_floor,item)
-            folder_path = folder_path.replace("\\", "/")
-            pdf_file_list=os.listdir(folder_path)             
-            JPEG_Folder_path=os.path.join(folder_path,"JPEGs")
-            JPEG_Folder_path=JPEG_Folder_path.replace("\\", "/")
-        
-            if os.path.isdir(JPEG_Folder_path):
-                display(f'Folder at {item} already exist')
-                pass
+    def convert_pdf_to_jpeg(self, file_to_convert, folder_path):
+        if not os.path.exists(os.path.join(folder_path, "JPEGS")):
+            os.mkdir(os.path.join(folder_path, "JPEGS"))
+        jpeg_counter = 0
+        pdfImages = convert_from_path(os.path.join(folder_path, file_to_convert))
+        setupPath = os.path.join(folder_path, "JPEGS", file_to_convert[:-4])
+        for img in pdfImages:
+            if jpeg_counter == 0:
+                img.save(setupPath + ".jpg", "JPEG")
+                jpeg_counter += 1
             else:
-                os.mkdir(JPEG_Folder_path)
-                display(f'Folder created in {item} ')
- 
-            for file in pdf_file_list:
-                if file[-3:] == "pdf":
-                    filePath = os.path.join(folder_path,file)
-                    display(f'converting {file}')
-                    pdfImages = convert_from_path(filePath)                                      
-                    counter= 0
-                    for img in pdfImages:
-                        setupPath = os.path.join(JPEG_Folder_path, file[:-4])
-                        if counter==0:
-                            img.save(setupPath + ".jpg", "JPEG")
-                            counter +=1
-                        else:
-                            img.save(setupPath +"_" +str(counter) + ".jpg", "JPEG")
-                            counter += 1
-                    display(f'Converted to {file}.jpg') 
-            display('All pdf are converted successfully')                  
-                    
-           
-          
+                img.save(setupPath + "_" + str(jpeg_counter) + ".jpg", "JPEG")
+                jpeg_counter += 1
