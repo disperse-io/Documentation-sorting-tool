@@ -6,6 +6,9 @@ from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.utils import quote_sheetname
 import subprocess
 from pdf2image import convert_from_path
+from IPython.display import Markdown
+import time
+from IPython.core.display import clear_output
 
 
 class Generator:
@@ -91,7 +94,7 @@ class Generator:
         workbook = openpyxl.Workbook()
         worksheet = workbook.active
         validation_worksheet = workbook.create_sheet("validation_data")
-        worksheet.append(["File Name", "New Name", "Destination"])
+        worksheet.append(["File Name", "New Name", "Destination 1", "Destination 2", "Destination 3", "Destination 4", "Destination 5", "Destination 6", "Destination 7"])
         for row in all_data_files:
             worksheet.append([row])
 
@@ -154,31 +157,42 @@ class Generator:
 
             for row in excel_file.itertuples():
                 new_file_name = row[2]
-                if len(str(row[3])) > 1:
-                    last_folder = os.path.join(
-                        self.destination_dir_path,
-                        self.project_name,
-                        *str(row[3]).split(" <> "),
-                    )
-                    file_src_path = os.path.join(
-                        self.destination_dir_path,
-                        self.project_name,
-                        self.folder_names[-1],
-                        row[1],
-                    )
+                for i in [3, 4, 5, 6, 7, 8, 9]:
+                    if len(str(row[i])) > 1:
+                        last_folder = os.path.join(
+                            self.destination_dir_path,
+                            self.project_name,
+                            *str(row[i]).split(" <> "),
+                        )
+                        file_src_path = os.path.join(
+                            self.destination_dir_path,
+                            self.project_name,
+                            self.folder_names[-1],
+                            row[1],
+                        )
+                        file_name = new_file_name if isinstance(new_file_name, str) else row[1]
+                        file_dest_path = os.path.join(last_folder, file_name)
 
-                    if isinstance(new_file_name, str):
-                        file_name = new_file_name
-                        file_dest_path = os.path.join(last_folder, new_file_name)
-                    else:
-                        file_name = row[1]
-                        file_dest_path = os.path.join(last_folder, row[1])
-                try:
-                    shutil.move(file_src_path, file_dest_path)
-                    self.convert_pdf_to_jpeg(file_name, last_folder)
+                        try:
+                            shutil.copy(file_src_path, file_dest_path)
+                            self.convert_pdf_to_jpeg(file_name, last_folder)
+                        except FileNotFoundError:
+                            pass
 
-                except FileNotFoundError:
-                    pass
+
+            filtered_df = excel_file[excel_file["Destination 1"].notna()]
+            file_names = filtered_df["File Name"].tolist()
+
+            all_data = os.path.join(
+                            self.destination_dir_path,
+                            self.project_name,
+                            self.folder_names[-1])
+
+            for file_name in os.listdir(all_data):
+                if file_name in file_names:
+                    os.remove(os.path.join(all_data,file_name))
+
+
             file_count = len(
                 os.listdir(
                     os.path.join(
@@ -189,9 +203,11 @@ class Generator:
                 )
             )
             if file_count == 0:
-                display("Congratulations you moved all files!")
+                display(Markdown('<center><header><h3>Congratulations you moved all files!</h3></header></center>'))
             else:
-                display("You have " + str(file_count) + " more PDFs to move !")
+                display(Markdown('<center><header><h3> You have {}  !</h3></header></center>'.format(
+                    str(file_count) + "more PDFs to move ! ")))
+
         except PermissionError:
             if "excel_file" in locals() and not excel_file.closed:
                 excel_file.close()
@@ -203,10 +219,21 @@ class Generator:
         jpeg_counter = 0
         pdfImages = convert_from_path(os.path.join(folder_path, file_to_convert))
         setupPath = os.path.join(folder_path, "JPEGS", file_to_convert[:-4])
-        for img in pdfImages:
-            if jpeg_counter == 0:
+        for i,img in enumerate(pdfImages):
+            if i == 0:
                 img.save(setupPath + ".jpg", "JPEG")
                 jpeg_counter += 1
             else:
                 img.save(setupPath + "_" + str(jpeg_counter) + ".jpg", "JPEG")
                 jpeg_counter += 1
+
+
+
+        display(Markdown('<center><header><h3> Converted to {} </h3></header></center>'.format(file_to_convert[:-4] + ".jpg")))
+
+        time.sleep(1)
+        clear_output(wait=True)
+
+        return  jpeg_counter
+
+
