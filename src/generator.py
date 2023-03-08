@@ -155,7 +155,7 @@ class Generator:
                 header=0,
             )
 
-            for row in excel_file.itertuples():
+            for j,row in enumerate(excel_file.itertuples()):
                 new_file_name = row[2]
                 for i in [3, 4, 5, 6, 7, 8, 9]:
                     if len(str(row[i])) > 1:
@@ -176,6 +176,10 @@ class Generator:
                         try:
                             shutil.copy(file_src_path, file_dest_path)
                             self.convert_pdf_to_jpeg(file_name, last_folder)
+                            # display(f"Processed {file_name} ({j + 1} of {len(excel_file)})")
+                            display(Markdown(f'<center><header><h3> Processed {file_name}({j+1} of {len(excel_file)}) </h3></header></center>'))
+                            clear_output(wait=True)
+
                         except FileNotFoundError:
                             pass
 
@@ -188,6 +192,7 @@ class Generator:
                             self.project_name,
                             self.folder_names[-1])
 
+            num_files=len(file_names)
             for file_name in os.listdir(all_data):
                 if file_name in file_names:
                     os.remove(os.path.join(all_data,file_name))
@@ -227,12 +232,8 @@ class Generator:
                 img.save(setupPath + "_" + str(jpeg_counter) + ".jpg", "JPEG")
                 jpeg_counter += 1
 
-
-
-        display(Markdown('<center><header><h3> Converted to {} </h3></header></center>'.format(file_to_convert[:-4] + ".jpg")))
-
         time.sleep(1)
-        clear_output(wait=True)
+
 
         return  jpeg_counter
 
