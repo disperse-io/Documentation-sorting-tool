@@ -9,6 +9,7 @@ from pdf2image import convert_from_path
 from IPython.display import Markdown
 import time
 from IPython.core.display import clear_output
+import PyPDF2
 
 
 class Generator:
@@ -94,9 +95,14 @@ class Generator:
         workbook = openpyxl.Workbook()
         worksheet = workbook.active
         validation_worksheet = workbook.create_sheet("validation_data")
-        worksheet.append(["File Name", "New Name", "Destination 1", "Destination 2", "Destination 3", "Destination 4", "Destination 5", "Destination 6", "Destination 7"])
+        worksheet.append(["File Name", "New Name", "Destination 1", "Destination 2", "Destination 3", "Destination 4", "Destination 5", "Destination 6", "Destination 7", "Number of PDFs"])
         for row in all_data_files:
-            worksheet.append([row])
+            pdf_path = os.path.join(self.destination_dir_path, self.project_name, self.folder_names[-1], row)
+            with open(pdf_path, "rb") as f:
+                pdf_reader = PyPDF2.PdfFileReader(f)
+                num_pages = pdf_reader.getNumPages()
+
+            worksheet.append([row, "", "", "", "", "", "", "", "", num_pages])
 
         for folders in self.folder_names:
             if folders == "02_Typical Floor":
